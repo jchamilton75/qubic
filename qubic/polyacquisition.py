@@ -245,20 +245,19 @@ class QubicPolyAcquisition(object):
             preconditioner = None
         return preconditioner
 
-    def tod2map(self, tod, cov=None, tol=1e-5, maxiter=1000, verbose=True):
+    def tod2map(self, tod, cov=None, tol=1e-5, maxiter=1000, verbose=True, guess=None):
         '''
         Reconstruct map from tod
         '''
         H = self.get_operator()
         invntt = self.get_invntt_operator()
         
-
         A = H.T * invntt * H
         b = H.T * invntt * tod
 
         preconditioner = self.get_preconditioner(cov)
         solution = pcg(A, b, M=preconditioner, 
-            disp=verbose, tol=tol, maxiter=maxiter)
+            disp=verbose, tol=tol, maxiter=maxiter, x0=guess)
         return solution['x']
 
 class QubicPolyPlanckAcquisition(QubicPlanckAcquisition):
